@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiln Lab — Robustness Testing for Robot AI</title>
+  <meta name="description" content="Systematically test how vision-language-action models degrade under realistic conditions. Open-source CLI. Compliance-ready reports.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            kiln: {
+              50: '#fef3ed',
+              100: '#fde4d4',
+              200: '#fac5a8',
+              300: '#f69d71',
+              400: '#f17038',
+              500: '#ee5114',
+              600: '#df370a',
+              700: '#b9260b',
+              800: '#932010',
+              900: '#771d11',
+              950: '#400b06',
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    code, .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(135deg, #f17038 0%, #ee5114 50%, #df370a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .glow { box-shadow: 0 0 60px rgba(241, 112, 56, 0.15); }
+    .code-block {
+      background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 w-full z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800/50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 text-lg font-bold">
+        <span class="text-kiln-400">kiln</span><span class="text-gray-400 font-normal">lab</span>
+      </a>
+      <!-- Desktop links -->
+      <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+        <a href="#features" class="hover:text-white transition">Features</a>
+        <a href="#how-it-works" class="hover:text-white transition">How It Works</a>
+        <a href="#compliance" class="hover:text-white transition">Compliance</a>
+        <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank" class="hover:text-white transition flex items-center gap-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <!-- Mobile menu button -->
+      <button id="menu-btn" class="md:hidden text-gray-400 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-800/50 bg-gray-950/95 backdrop-blur-md">
+      <div class="px-6 py-4 flex flex-col gap-3 text-sm text-gray-400">
+        <a href="#features" class="hover:text-white transition py-1">Features</a>
+        <a href="#how-it-works" class="hover:text-white transition py-1">How It Works</a>
+        <a href="#compliance" class="hover:text-white transition py-1">Compliance</a>
+        <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank" class="hover:text-white transition py-1">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(241,112,56,0.08)_0%,_transparent_60%)]"></div>
+    <div class="max-w-4xl mx-auto px-6 text-center relative">
+      <div class="inline-block mb-6 px-4 py-1.5 rounded-full border border-kiln-500/30 bg-kiln-500/5 text-kiln-400 text-sm font-medium">
+        Open Source &middot; MIT Licensed
+      </div>
+      <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
+        Robustness testing<br>
+        <span class="gradient-text">for robot AI</span>
+      </h1>
+      <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Systematically test how vision-language-action models degrade under realistic physical perturbations. One command. Audit-grade reports. Compliance-ready.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank"
+           class="px-6 py-3 bg-kiln-500 hover:bg-kiln-600 text-white font-semibold rounded-lg transition flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+        <a href="#how-it-works"
+           class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-100 font-semibold rounded-lg transition border border-gray-700">
+          See How It Works
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem -->
+  <section class="py-20 border-t border-gray-800/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-3xl">
+        <p class="text-kiln-400 font-semibold text-sm uppercase tracking-wider mb-3">The Problem</p>
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">VLA models look great in the lab.<br>They fail in the real world.</h2>
+        <p class="text-gray-400 text-lg leading-relaxed mb-8">
+          Vision-language-action models power the next generation of autonomous robots. But change the lighting, shift the camera angle, or add a distractor object and performance can collapse. Most teams discover this in production, not in testing.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-6">
+          <div class="text-3xl font-bold text-kiln-400 mb-2">87%</div>
+          <p class="text-gray-400 text-sm">of VLA models show significant performance drops under moderate lighting changes</p>
+        </div>
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-6">
+          <div class="text-3xl font-bold text-kiln-400 mb-2">7</div>
+          <p class="text-gray-400 text-sm">physical dimensions where models silently degrade: camera, lighting, noise, texture, layout, dynamics, language</p>
+        </div>
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-6">
+          <div class="text-3xl font-bold text-kiln-400 mb-2">2027</div>
+          <p class="text-gray-400 text-sm">EU AI Act and Machinery Regulation deadlines requiring documented robustness testing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-20 border-t border-gray-800/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="text-kiln-400 font-semibold text-sm uppercase tracking-wider mb-3">Features</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Test. Red-team. Certify.</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="w-12 h-12 rounded-lg bg-kiln-500/10 border border-kiln-500/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-kiln-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Robustness Benchmarks</h3>
+          <p class="text-gray-400 leading-relaxed">
+            Sweep across 7 physical dimensions with 5 calibrated severity levels. Immutable benchmarks that are comparable across time and teams.
+          </p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="w-12 h-12 rounded-lg bg-kiln-500/10 border border-kiln-500/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-kiln-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Adversarial Red-Teaming</h3>
+          <p class="text-gray-400 leading-relaxed">
+            Find deliberate exploit paths with optimization-based adversarial attacks. Universal patches, action freezing, 3D texture attacks, and backdoor detection.
+          </p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="w-12 h-12 rounded-lg bg-kiln-500/10 border border-kiln-500/20 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-kiln-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-3">Compliance Reports</h3>
+          <p class="text-gray-400 leading-relaxed">
+            Generate audit-grade evidence packs mapped to EU AI Act, Machinery Regulation, and ISO 10218. PDF reports ready for regulators.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="py-20 border-t border-gray-800/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="text-kiln-400 font-semibold text-sm uppercase tracking-wider mb-3">How It Works</p>
+        <h2 class="text-3xl md:text-4xl font-bold">One command to test your model</h2>
+      </div>
+      <div class="code-block rounded-xl border border-gray-800/50 glow overflow-hidden">
+        <div class="flex items-center gap-2 px-5 py-3 border-b border-gray-800/50">
+          <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500/70"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500/70"></div>
+          <span class="ml-3 text-xs text-gray-500 font-mono">terminal</span>
+        </div>
+        <div class="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
+          <p class="text-gray-500"># Install</p>
+          <p><span class="text-green-400">$</span> <span class="text-gray-100">pip install kiln-lab</span></p>
+          <br>
+          <p class="text-gray-500"># Run robustness benchmark</p>
+          <p><span class="text-green-400">$</span> <span class="text-gray-100">kiln bench --model my_model.py --suite standard-L3 --env PickCube</span></p>
+          <br>
+          <p class="text-gray-500 text-xs">Running robustness evaluation...</p>
+          <p class="text-gray-500 text-xs">Model: MyVLA | Suite: standard-L3 | Env: PickCube | Episodes: 50</p>
+          <br>
+          <p class="text-gray-500 text-xs">Baseline TSR:            0.92</p>
+          <p class="text-gray-500 text-xs">Camera jitter (L3):      0.74  <span class="text-yellow-400">Grade: C</span></p>
+          <p class="text-gray-500 text-xs">Lighting change (L3):    0.68  <span class="text-yellow-400">Grade: C</span></p>
+          <p class="text-gray-500 text-xs">Gaussian blur (L3):      0.85  <span class="text-green-400">Grade: B</span></p>
+          <p class="text-gray-500 text-xs">Distractors (L3):        0.41  <span class="text-red-400">Grade: F</span></p>
+          <p class="text-gray-500 text-xs">Robot init state (L3):   0.79  <span class="text-green-400">Grade: B</span></p>
+          <br>
+          <p class="text-gray-500 text-xs">Overall Robustness Score: <span class="text-kiln-400 font-medium">0.67</span> (Grade: C)</p>
+          <br>
+          <p class="text-gray-500"># Generate compliance report</p>
+          <p><span class="text-green-400">$</span> <span class="text-gray-100">kiln comply results.json --regulation eu-ai-act -o report.pdf</span></p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6 mt-10">
+        <div class="text-center">
+          <div class="text-kiln-400 font-bold text-lg mb-1">Model-agnostic</div>
+          <p class="text-gray-500 text-sm">Any <code class="text-xs bg-gray-800 px-1.5 py-0.5 rounded">(image, instruction) &rarr; action</code> model</p>
+        </div>
+        <div class="text-center">
+          <div class="text-kiln-400 font-bold text-lg mb-1">Physically calibrated</div>
+          <p class="text-gray-500 text-sm">Fixed severity parameters &mdash; benchmarks are comparable across years</p>
+        </div>
+        <div class="text-center">
+          <div class="text-kiln-400 font-bold text-lg mb-1">CI/CD ready</div>
+          <p class="text-gray-500 text-sm">GitHub Actions integration &mdash; robustness as a required pipeline check</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Source -->
+  <section class="py-20 border-t border-gray-800/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="bg-gradient-to-br from-gray-900 to-gray-900/50 border border-gray-800/50 rounded-2xl p-10 md:p-14 flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1">
+          <p class="text-kiln-400 font-semibold text-sm uppercase tracking-wider mb-3">Open Source</p>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">Built in the open</h2>
+          <p class="text-gray-400 leading-relaxed mb-6">
+            The Kiln CLI is MIT-licensed and free forever. Contribute perturbation modules, simulator adapters, or failure reports. The robustness of robot AI is too important to be behind closed doors.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank"
+               class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-sm font-medium rounded-lg transition border border-gray-700 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              Star on GitHub
+            </a>
+            <a href="https://github.com/tonytrinh12358/kiln-cli/blob/main/CONTRIBUTING.md" target="_blank"
+               class="px-5 py-2.5 text-gray-400 hover:text-white text-sm font-medium rounded-lg transition border border-gray-800 hover:border-gray-700">
+              Contributing Guide
+            </a>
+          </div>
+        </div>
+        <div class="flex-shrink-0 text-center">
+          <div class="text-6xl md:text-7xl font-extrabold gradient-text">MIT</div>
+          <p class="text-gray-500 text-sm mt-2">Licensed</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compliance -->
+  <section id="compliance" class="py-20 border-t border-gray-800/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <p class="text-kiln-400 font-semibold text-sm uppercase tracking-wider mb-3">Compliance</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Regulation is coming.<br>Be ready.</h2>
+        <p class="text-gray-400 text-lg mt-4 max-w-2xl mx-auto">
+          The EU AI Act and Machinery Regulation require documented robustness testing for AI-powered robots. Kiln maps your test results directly to regulatory requirements.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <span class="text-blue-400 font-bold text-sm">EU</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">EU AI Act</h3>
+              <p class="text-xs text-gray-500">High-risk AI systems &middot; Art. 6(1)</p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed mb-3">
+            Mandatory robustness requirements for AI safety components in machinery, medical devices, and automotive systems.
+          </p>
+          <p class="text-yellow-400/80 text-xs font-medium">Deadline: August 2, 2027</p>
+        </div>
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <span class="text-blue-400 font-bold text-sm">EU</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">Machinery Regulation</h3>
+              <p class="text-xs text-gray-500">2023/1230 &middot; Self-evolving AI</p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed mb-3">
+            Mandatory Notified Body assessment for safety components using machine learning. No assessment means no EU market access.
+          </p>
+          <p class="text-yellow-400/80 text-xs font-medium">Deadline: January 20, 2027</p>
+        </div>
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+              <span class="text-gray-400 font-bold text-sm">ISO</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">ISO 10218</h3>
+              <p class="text-xs text-gray-500">Robot safety &middot; 2025 revision</p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Updated robot safety standard with new requirements for AI-based control systems, environmental conditions testing, and cybersecurity.
+          </p>
+        </div>
+        <div class="bg-gray-900/30 border border-gray-800/50 rounded-xl p-8">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+              <span class="text-gray-400 font-bold text-sm">+</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">More Frameworks</h3>
+              <p class="text-xs text-gray-500">NIST AI RMF &middot; ISO 42001</p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Additional framework mappings for NIST AI 100-2 adversarial ML taxonomy and ISO/IEC 42001 AI management systems.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 border-t border-gray-800/50">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Start testing today</h2>
+      <p class="text-gray-400 text-lg mb-8">
+        Install the CLI and run your first robustness benchmark in minutes. Free and open source.
+      </p>
+      <div class="code-block rounded-lg border border-gray-800/50 inline-block px-8 py-4 mb-8">
+        <code class="text-kiln-400 text-lg">pip install kiln-lab</code>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank"
+           class="px-6 py-3 bg-kiln-500 hover:bg-kiln-600 text-white font-semibold rounded-lg transition">
+          Get Started
+        </a>
+        <a href="mailto:contact@kilnlab.tech"
+           class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-100 font-semibold rounded-lg transition border border-gray-700">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800/50 py-12">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-2 text-lg font-bold">
+          <span class="text-kiln-400">kiln</span><span class="text-gray-400 font-normal">lab</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <a href="https://github.com/tonytrinh12358/kiln-cli" target="_blank" class="hover:text-gray-300 transition">GitHub</a>
+          <a href="mailto:contact@kilnlab.tech" class="hover:text-gray-300 transition">Contact</a>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-gray-800/30 text-center text-xs text-gray-600">
+        &copy; 2026 Kiln Lab. All rights reserved. Australia.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile menu toggle -->
+  <script>
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+  </script>
+</body>
+</html>
