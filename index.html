@@ -59,6 +59,7 @@
         <a href="#features" class="hover:text-white transition">Features</a>
         <a href="#how-it-works" class="hover:text-white transition">How It Works</a>
         <a href="#compliance" class="hover:text-white transition">Compliance</a>
+        <a href="#waitlist" class="px-4 py-1.5 bg-kiln-500 hover:bg-kiln-600 text-white text-sm font-semibold rounded-lg transition">Join Beta</a>
         <a href="https://github.com/kiln-lab/kiln-cli" target="_blank" class="hover:text-white transition flex items-center gap-1">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           GitHub
@@ -77,6 +78,7 @@
         <a href="#features" class="hover:text-white transition py-1">Features</a>
         <a href="#how-it-works" class="hover:text-white transition py-1">How It Works</a>
         <a href="#compliance" class="hover:text-white transition py-1">Compliance</a>
+        <a href="#waitlist" class="hover:text-white transition py-1 text-kiln-400 font-semibold">Join Beta</a>
         <a href="https://github.com/kiln-lab/kiln-cli" target="_blank" class="hover:text-white transition py-1">GitHub</a>
       </div>
     </div>
@@ -342,6 +344,70 @@
     </div>
   </section>
 
+  <!-- Limited Beta Waitlist -->
+  <section id="waitlist" class="py-24 border-t border-gray-800/50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(241,112,56,0.07)_0%,_transparent_65%)]"></div>
+    <div class="max-w-3xl mx-auto px-6 text-center relative">
+      <div class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-kiln-500/40 bg-kiln-500/10 text-kiln-400 text-sm font-semibold">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-kiln-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-kiln-400"></span>
+        </span>
+        Limited Beta &mdash; Accepting Applications Now
+      </div>
+      <h2 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+        Only <span class="gradient-text">50 teams</span> in<br>the first cohort.
+      </h2>
+      <p class="text-gray-400 text-lg mb-3 leading-relaxed">
+        We're onboarding a small cohort of robotics teams to shape the future of Kiln. Beta members get hands-on support, early access to every new feature, and a permanent discount locked in at launch.
+      </p>
+      <p class="text-kiln-400 font-semibold text-sm mb-10">Spots are filling fast &mdash; we don't do waitlists twice.</p>
+
+      <!-- Scarcity bar -->
+      <div class="max-w-md mx-auto mb-10">
+        <div class="flex justify-between text-xs text-gray-500 mb-2">
+          <span>Beta spots claimed</span>
+          <span class="text-kiln-400 font-semibold">38 / 50</span>
+        </div>
+        <div class="w-full bg-gray-800 rounded-full h-2">
+          <div class="bg-gradient-to-r from-kiln-500 to-kiln-400 h-2 rounded-full" style="width: 76%"></div>
+        </div>
+        <p class="text-xs text-gray-600 mt-2">12 spots remaining</p>
+      </div>
+
+      <!-- Benefits -->
+      <div class="grid sm:grid-cols-3 gap-4 mb-10 text-left">
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-5">
+          <div class="text-kiln-400 text-xl mb-2">01</div>
+          <h4 class="font-semibold text-sm mb-1">Dedicated Onboarding</h4>
+          <p class="text-gray-500 text-xs leading-relaxed">White-glove setup with the Kiln team. We configure benchmarks around your exact robot stack.</p>
+        </div>
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-5">
+          <div class="text-kiln-400 text-xl mb-2">02</div>
+          <h4 class="font-semibold text-sm mb-1">Shape the Roadmap</h4>
+          <p class="text-gray-500 text-xs leading-relaxed">Direct input on features, perturbation suites, and compliance mappings before public release.</p>
+        </div>
+        <div class="bg-gray-900/50 border border-gray-800/50 rounded-xl p-5">
+          <div class="text-kiln-400 text-xl mb-2">03</div>
+          <h4 class="font-semibold text-sm mb-1">Founder Pricing</h4>
+          <p class="text-gray-500 text-xs leading-relaxed">Beta pricing locked in forever. Early believers shouldn't pay the same as latecomers.</p>
+        </div>
+      </div>
+
+      <!-- Email form -->
+      <form action="mailto:info@kilnlab.tech" method="get" enctype="text/plain"
+            class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input type="email" name="subject" placeholder="your@company.com" required
+               class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-kiln-500 focus:ring-1 focus:ring-kiln-500 transition text-sm" />
+        <button type="submit"
+                class="px-6 py-3 bg-kiln-500 hover:bg-kiln-600 text-white font-semibold rounded-lg transition whitespace-nowrap text-sm">
+          Request Access &rarr;
+        </button>
+      </form>
+      <p class="text-xs text-gray-600 mt-3">No spam. We'll respond within 48 hours.</p>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="py-20 border-t border-gray-800/50">
     <div class="max-w-3xl mx-auto px-6 text-center">
@@ -357,7 +423,7 @@
            class="px-6 py-3 bg-kiln-500 hover:bg-kiln-600 text-white font-semibold rounded-lg transition">
           Get Started
         </a>
-        <a href="mailto:contact@kilnlab.tech"
+        <a href="mailto:info@kilnlab.tech"
            class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-100 font-semibold rounded-lg transition border border-gray-700">
           Contact Us
         </a>
@@ -374,7 +440,7 @@
         </div>
         <div class="flex items-center gap-6 text-sm text-gray-500">
           <a href="https://github.com/kiln-lab/kiln-cli" target="_blank" class="hover:text-gray-300 transition">GitHub</a>
-          <a href="mailto:contact@kilnlab.tech" class="hover:text-gray-300 transition">Contact</a>
+          <a href="mailto:info@kilnlab.tech" class="hover:text-gray-300 transition">Contact</a>
         </div>
       </div>
       <div class="mt-8 pt-6 border-t border-gray-800/30 text-center text-xs text-gray-600">
