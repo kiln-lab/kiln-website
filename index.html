@@ -395,16 +395,34 @@
       </div>
 
       <!-- Email form -->
-      <form action="mailto:info@kilnlab.tech" method="get" enctype="text/plain"
+      <form action="https://formspree.io/f/mjgjeerk" method="POST"
             class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-        <input type="email" name="subject" placeholder="your@company.com" required
+        <input type="hidden" name="_subject" value="New Kiln Beta Waitlist Signup" />
+        <input type="email" name="email" placeholder="your@company.com" required
                class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-kiln-500 focus:ring-1 focus:ring-kiln-500 transition text-sm" />
         <button type="submit"
                 class="px-6 py-3 bg-kiln-500 hover:bg-kiln-600 text-white font-semibold rounded-lg transition whitespace-nowrap text-sm">
           Request Access &rarr;
         </button>
       </form>
+      <p id="form-success" class="hidden text-green-400 text-sm mt-3">You're on the list — we'll be in touch within 48 hours.</p>
+      <p id="form-error" class="hidden text-red-400 text-sm mt-3">Something went wrong. Email us directly at info@kilnlab.tech.</p>
       <p class="text-xs text-gray-600 mt-3">No spam. We'll respond within 48 hours.</p>
+      <script>
+        const wlForm = document.querySelector('#waitlist form');
+        wlForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const res = await fetch(wlForm.action, {
+            method: 'POST', body: new FormData(wlForm), headers: { Accept: 'application/json' }
+          });
+          if (res.ok) {
+            wlForm.classList.add('hidden');
+            document.getElementById('form-success').classList.remove('hidden');
+          } else {
+            document.getElementById('form-error').classList.remove('hidden');
+          }
+        });
+      </script>
     </div>
   </section>
 
